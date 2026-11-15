@@ -1,0 +1,11 @@
+venv/
+app/venv/
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
+.coverage
+.pytest_cache
+htmlcov
+.env
+.git/

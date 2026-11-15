@@ -1,264 +1,230 @@
-# 📦 Project Setup
+# Module 13 – JWT Authentication with Client-Side Validation and Playwright E2E Testing
 
----
+## Project Overview
 
-# 🧩 1. Install Homebrew (Mac Only)
+This project implements user registration and login using JSON Web Tokens (JWT), with a FastAPI backend and a client-side frontend. Users can register an account, log in with their credentials, and receive a JWT after successful authentication.
 
-> Skip this step if you're on Windows.
+The project also includes client-side form validation, automated end-to-end testing with Playwright, Docker deployment, and a GitHub Actions CI/CD workflow.
 
-Homebrew is a package manager for macOS.  
-You’ll use it to easily install Git, Python, Docker, etc.
+## Features
 
-**Install Homebrew:**
+### 1. User Registration
 
-```bash
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-```
+- Register using a username, email address, and password.
+- Validate user input.
+- Check whether an email or username is already registered.
+- Hash passwords before storing them in the database.
+- Return a response after successful registration.
 
-**Verify Homebrew:**
+### 2. User Login
 
-```bash
-brew --version
-```
+- Log in using valid account credentials.
+- Verify passwords securely.
+- Return a JWT after successful authentication.
+- Return an HTTP 401 response when credentials are incorrect.
 
-If you see a version number, you're good to go.
+### 3. Frontend Validation
 
----
+The frontend includes separate registration and login pages:
 
-# 🧩 2. Install and Configure Git
+- `register.html`
+- `login.html`
 
-## Install Git
+Client-side validation includes:
 
-- **MacOS (using Homebrew)**
+- Email format validation.
+- Minimum password length validation.
+- Feedback for invalid input and authentication errors.
+- Handling of JWT responses and browser-side token storage.
 
-```bash
-brew install git
-```
+### 4. Automated Testing
 
-- **Windows**
+The project includes unit, integration, and end-to-end tests.
 
-Download and install [Git for Windows](https://git-scm.com/download/win).  
-Accept the default options during installation.
+Playwright E2E tests cover:
 
-**Verify Git:**
+- Successful user registration.
+- Successful user login.
+- Registration with an invalid or too-short password.
+- Login with an incorrect password.
 
-```bash
-git --version
-```
+## Technologies Used
 
----
+- Python 3.11
+- FastAPI
+- SQLAlchemy
+- PostgreSQL
+- Pydantic
+- JSON Web Tokens (JWT)
+- Password hashing
+- HTML, CSS, and JavaScript
+- Playwright
+- Pytest
+- Docker and Docker Compose
+- GitHub Actions
+- Trivy vulnerability scanning
 
-## Configure Git Globals
+## Project Setup
 
-Set your name and email so Git tracks your commits properly:
+### Prerequisites
 
-```bash
-git config --global user.name "Your Name"
-git config --global user.email "your_email@example.com"
-```
+Install the following tools:
 
-Confirm the settings:
+- Python 3.11
+- Docker Desktop
+- Docker Compose
+- Git
+- A GitHub account
 
-```bash
-git config --list
-```
-
----
-
-## Generate SSH Keys and Connect to GitHub
-
-> Only do this once per machine.
-
-1. Generate a new SSH key:
-
-```bash
-ssh-keygen -t ed25519 -C "your_email@example.com"
-```
-
-(Press Enter at all prompts.)
-
-2. Start the SSH agent:
-
-```bash
-eval "$(ssh-agent -s)"
-```
-
-3. Add the SSH private key to the agent:
+### 1. Clone the Repository
 
 ```bash
-ssh-add ~/.ssh/id_ed25519
+git clone https://github.com/DeepLearnDS/module13_is601.git
+cd module13_is601
 ```
 
-4. Copy your SSH public key:
+### 2. Configure Environment Variables
 
-- **Mac/Linux:**
+Create and configure the environment file required by the application.
+
+Use the environment variable names and settings expected by the project's configuration. Do not commit passwords, database credentials, JWT secrets, or other sensitive information to GitHub.
+
+### 3. Start the Application with Docker Compose
+
+Build and start the application:
 
 ```bash
-cat ~/.ssh/id_ed25519.pub | pbcopy
+docker compose up --build -d
 ```
 
-- **Windows (Git Bash):**
+Check the running containers:
 
 ```bash
-cat ~/.ssh/id_ed25519.pub | clip
+docker compose ps
 ```
 
-5. Add the key to your GitHub account:
-   - Go to [GitHub SSH Settings](https://github.com/settings/keys)
-   - Click **New SSH Key**, paste the key, save.
-
-6. Test the connection:
+View application logs:
 
 ```bash
-ssh -T git@github.com
+docker compose logs -f web
 ```
 
-You should see a success message.
-
----
-
-# 🧩 3. Clone the Repository
-
-Now you can safely clone the course project:
+Stop the containers:
 
 ```bash
-git clone <repository-url>
-cd <repository-directory>
+docker compose down
 ```
 
----
+## Running Tests
 
-# 🛠️ 4. Install Python 3.10+
-
-## Install Python
-
-- **MacOS (Homebrew)**
+Run the test suite using the project's Docker environment:
 
 ```bash
-brew install python
+docker compose run --rm web python -m pytest
 ```
 
-- **Windows**
-
-Download and install [Python for Windows](https://www.python.org/downloads/).  
-✅ Make sure you **check the box** `Add Python to PATH` during setup.
-
-**Verify Python:**
+Run integration tests:
 
 ```bash
-python3 --version
-```
-or
-```bash
-python --version
+docker compose run --rm web python -m pytest tests/integration -v
 ```
 
----
-
-## Create and Activate a Virtual Environment
-
-(Optional but recommended)
+Run unit tests:
 
 ```bash
-python3 -m venv venv
-source venv/bin/activate   # Mac/Linux
-venv\Scripts\activate.bat  # Windows
+docker compose run --rm web python -m pytest tests/unit -v
 ```
 
-### Install Required Packages
+Run end-to-end tests:
 
 ```bash
-pip install -r requirements.txt
+docker compose run --rm web python -m pytest tests/e2e -v
 ```
 
----
+The E2E tests use Playwright to verify registration, login, and invalid-input scenarios.
 
-# 🐳 5. (Optional) Docker Setup
+## Frontend Pages
 
-> Skip if Docker isn't used in this module.
+The application includes two separate frontend pages:
 
-## Install Docker
+- **Registration:** `register.html`
+- **Login:** `login.html`
 
-- [Install Docker Desktop for Mac](https://www.docker.com/products/docker-desktop/)
-- [Install Docker Desktop for Windows](https://www.docker.com/products/docker-desktop/)
+The pages provide form validation and feedback for users during registration and login. Successful authentication returns a JWT that the frontend handles for subsequent authenticated requests.
 
-## Build Docker Image
+Use the application's configured frontend routes or instructions to open these pages.
+
+## Docker Deployment
+
+The application is containerized using Docker and Docker Compose.
+
+Build the Docker image:
 
 ```bash
-docker build -t <image-name> .
+docker build -t app:test .
 ```
 
-## Run Docker Container
+Run the Docker image:
 
 ```bash
-docker run -it --rm <image-name>
+docker run --rm -p 8000:8000 app:test
 ```
 
----
+### Docker Hub
 
-# 🚀 6. Running the Project
+Docker Hub repository:
 
-- **Without Docker**:
+[https://hub.docker.com/r/codeec/601_module13](https://hub.docker.com/r/codeec/601_module13)
 
-```bash
-python main.py
-```
+## GitHub Actions CI/CD
 
-(or update this if the main script is different.)
+The project uses GitHub Actions to automate testing and deployment.
 
-- **With Docker**:
+The workflow is designed to:
 
-```bash
-docker run -it --rm <image-name>
-```
+1. Set up the Python environment.
+2. Start the required database and application services.
+3. Run automated tests, including Playwright E2E tests.
+4. Build the Docker image.
+5. Run a Trivy vulnerability scan.
+6. Push the Docker image to Docker Hub after the required checks succeed.
 
----
+Docker Hub credentials are configured through GitHub repository secrets:
 
-# 📝 7. Submission Instructions
+- `DOCKERHUB_USERNAME`
+- `DOCKERHUB_TOKEN`
 
-After finishing your work:
+The workflow uses these secrets to authenticate with Docker Hub. Sensitive credentials should never be committed to the repository.
 
-```bash
-git add .
-git commit -m "Complete Module X"
-git push origin main
-```
+## Security
 
-Then submit the GitHub repository link as instructed.
+Security measures implemented in the project include:
 
----
+- Password hashing rather than storing plain-text passwords.
+- JWT-based authentication.
+- Input validation using Pydantic and client-side validation.
+- Updated Python package dependencies.
+- Docker image vulnerability scanning using Trivy.
+- GitHub Actions secrets for Docker Hub authentication.
 
-# 🔥 Useful Commands Cheat Sheet
+## Learning Objectives
 
-| Action                         | Command                                          |
-| ------------------------------- | ------------------------------------------------ |
-| Install Homebrew (Mac)          | `/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"` |
-| Install Git                     | `brew install git` or Git for Windows installer |
-| Configure Git Global Username  | `git config --global user.name "Your Name"`      |
-| Configure Git Global Email     | `git config --global user.email "you@example.com"` |
-| Clone Repository                | `git clone <repo-url>`                          |
-| Create Virtual Environment     | `python3 -m venv venv`                           |
-| Activate Virtual Environment   | `source venv/bin/activate` / `venv\Scripts\activate.bat` |
-| Install Python Packages        | `pip install -r requirements.txt`               |
-| Build Docker Image              | `docker build -t <image-name> .`                |
-| Run Docker Container            | `docker run -it --rm <image-name>`               |
-| Push Code to GitHub             | `git add . && git commit -m "message" && git push` |
+This assignment provides practical experience with:
 
----
+- Implementing JWT authentication.
+- Building registration and login functionality.
+- Validating user input on the client and server.
+- Testing frontend workflows with Playwright.
+- Integrating automated tests into GitHub Actions.
+- Building and publishing Docker images.
+- Scanning container images for security vulnerabilities.
 
-# 📋 Notes
+## Repository
 
-- Install **Homebrew** first on Mac.
-- Install and configure **Git** and **SSH** before cloning.
-- Use **Python 3.10+** and **virtual environments** for Python projects.
-- **Docker** is optional depending on the project.
+GitHub:
 
----
+[https://github.com/DeepLearnDS/module13_is601](https://github.com/DeepLearnDS/module13_is601)
 
-# 📎 Quick Links
+Docker Hub:
 
-- [Homebrew](https://brew.sh/)
-- [Git Downloads](https://git-scm.com/downloads)
-- [Python Downloads](https://www.python.org/downloads/)
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/)
-- [GitHub SSH Setup Guide](https://docs.github.com/en/authentication/connecting-to-github-with-ssh)
+[https://hub.docker.com/r/codeec/601_module13](https://hub.docker.com/r/codeec/601_module13)
